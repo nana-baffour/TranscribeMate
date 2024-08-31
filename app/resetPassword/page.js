@@ -4,6 +4,9 @@ import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { app } from "../utils/firebaseConfig";
+
+app;
 
 // Initialize Firebase (make sure to replace with your config)
 const firebaseConfig = {
