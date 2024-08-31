@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap"); */
+
+
+@layer base{
+  html {
+    font-family: "Manrope", sans-serif;
+  }
+
+  
+}
+@layer components {
+  .btn {
+    @apply px-6 py-2.5 outline-0 focus:ring-offset-1 focus:ring-1 rounded-full transition duration-300 flex items-center gap-2;
+  }
+  .btn-outline {
+    @apply hover:bg-blue-950 ring-1;
+  }
+  .btn-primary {
+    @apply bg-blue-950 hover:bg-blue-950;
+  }
+
+  .spinner {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: radial-gradient(farthest-side, #474bff 94%, #0000) top/9px 9px
+        no-repeat,
+      conic-gradient(#0000 30%, #474bff);
+    -webkit-mask: radial-gradient(
+      farthest-side,
+      #0000 calc(100% - 9px),
+      #000 0
+    );
+    animation: spinner-c7wet2 1s infinite linear;
+  }
+
+  @keyframes spinner-c7wet2 {
+    100% {
+      transform: rotate(1turn);
+    }
+  }
+}
+
+
