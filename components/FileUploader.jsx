@@ -5,8 +5,7 @@ import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import OpenAI from "openai";
 import { useRef, useState } from "react";
 import { MdCloudUpload } from "react-icons/md";
-import { CirclesWithBar } from 'react-loader-spinner'
-
+import { CirclesWithBar } from "react-loader-spinner";
 
 import { toast } from "sonner";
 
@@ -27,7 +26,8 @@ const FileUploader = () => {
 
   const handleFileChange = (e) => {
     const file = e?.target?.files[0];
-    if (file && file.size > 25 * 1024 * 1024) { // 25 MB size limit
+    if (file && file.size > 25 * 1024 * 1024) {
+      // 25 MB size limit
       toast.error("File size exceeds the 25MB limit.");
       fileInputRef.current.value = null;
       e.target.value = null;
@@ -41,7 +41,8 @@ const FileUploader = () => {
   const handleDrop = (e) => {
     e.preventDefault();
     const file = e.dataTransfer.files[0];
-    if (file && file.size > 25 * 1024 * 1024) { // 25 MB size limit
+    if (file && file.size > 25 * 1024 * 1024) {
+      // 25 MB size limit
       toast.error("File size exceeds the 25MB limit.");
       setSelectedFile(null);
       return;
@@ -98,15 +99,23 @@ const FileUploader = () => {
             dangerouslyAllowBrowser: true,
           });
 
-
           setIsTranscribing(true);
-          const translation = await openai.audio.translations.create({
+          const transcription = await openai.audio.transcriptions.create({
             file: selectedFile,
             model: "whisper-1",
             response_format: "verbose_json",
-            timestamp_granularities: ["word"],
+            timestamp_granularities: ["segment"],
           });
-
+          console.log({
+            userId: user.uid,
+            name: selectedFile.name,
+            url: downloadURL,
+            size: (selectedFile.size / 1024).toFixed(2),
+            date: new Date(),
+            segments: JSON.stringify(transcription.segments),
+            fileType: selectedFile.type,
+            text: transcription.text,
+          });
 
           await addDoc(collection(database, "transcriptions"), {
             userId: user.uid,
@@ -114,15 +123,14 @@ const FileUploader = () => {
             url: downloadURL,
             size: (selectedFile.size / 1024).toFixed(2),
             date: new Date(),
-            segments: JSON.stringify(translation.segments),
+            segments: JSON.stringify(transcription.segments),
             fileType: selectedFile.type,
-            text: translation.text,
+            text: transcription.text,
           });
-          setTranscription(translation.text);
+          setTranscription(transcription.text);
           setIsTranscribing(false);
           toast.success("Transcription successful!");
           setSelectedFile(null);
-
         }
       );
     } catch (err) {
@@ -152,26 +160,26 @@ const FileUploader = () => {
         onDragOver={handleDragOver}
       >
         <form onSubmit={handleSubmit} className='flex flex-col items-center'>
-          {!isTranscribing && <>
+          {!isTranscribing && (
+            <>
+              <p className='text-gray-600 text-lg mb-4 flex flex-col items-center'>
+                <MdCloudUpload className='text-6xl md:text-9xl text-blue-950 mb-2' />
+                Drag and drop your file here or click to select
+              </p>
 
-            <p className='text-gray-600 text-lg mb-4 flex flex-col items-center'>
-              <MdCloudUpload className='text-6xl md:text-9xl text-blue-950 mb-2' />
-              Drag and drop your file here or click to select
-            </p>
+              <p className='text-black mt-1 opacity-50'>OR</p>
 
-            <p className='text-black mt-1 opacity-50'>OR</p>
-
-            <input
-              type='file'
-              max={25 * 1024 * 1024}
-              onChange={handleFileChange}
-              accept='audio/*,video/*'
-              name='file'
-              ref={fileInputRef}
-              className='bg-blue-950 text-white font-bold rounded md:px-2 md:py-1 sm:text-sm mt-2 px-4 py-2 text-center'
-            />
-            <p className='text-black mt-2 opacity-50'>OR</p>
-            {/* <input
+              <input
+                type='file'
+                max={25 * 1024 * 1024}
+                onChange={handleFileChange}
+                accept='audio/*,video/*'
+                name='file'
+                ref={fileInputRef}
+                className='bg-blue-950 text-white font-bold rounded md:px-2 md:py-1 sm:text-sm mt-2 px-4 py-2 text-center'
+              />
+              <p className='text-black mt-2 opacity-50'>OR</p>
+              {/* <input
               type='search'
               name=''
               placeholder='Enter URL to import audio'
@@ -180,16 +188,16 @@ const FileUploader = () => {
               onChange={()=>{}}
             /> */}
 
-            <div className='w-full text-center mt-6'>
-              <button
-                type='submit'
-                className='border text-sm py-2 px-6 ml-1 text-black opacity-80 hover:bg-teal-300 hover:border-blue-950 hover:text-blue-950 hover:font-bold rounded'
-              >
-                Transcribe
-              </button>
-            </div>
-          </>}
-
+              <div className='w-full text-center mt-6'>
+                <button
+                  type='submit'
+                  className='border text-sm py-2 px-6 ml-1 text-black opacity-80 hover:bg-teal-300 hover:border-blue-950 hover:text-blue-950 hover:font-bold rounded'
+                >
+                  Transcribe
+                </button>
+              </div>
+            </>
+          )}
 
           {selectedFile && (
             <div className='mt-4 text-center text-gray-500'>
@@ -205,24 +213,23 @@ const FileUploader = () => {
               </p>
             </div>
           )}
-          {isTranscribing &&
+          {isTranscribing && (
             <>
-              <p className="text-blue-950 mb-4">Transcribing... Please wait</p>
+              <p className='text-blue-950 mb-4'>Transcribing... Please wait</p>
               <CirclesWithBar
-                height="50"
-                width="50"
-                color="#5eead4"
-                outerCircleColor="#172554"
-                innerCircleColor="#5eead4"
-                barColor="#5eead4"
-                ariaLabel="circles-with-bar-loading"
+                height='50'
+                width='50'
+                color='#5eead4'
+                outerCircleColor='#172554'
+                innerCircleColor='#5eead4'
+                barColor='#5eead4'
+                ariaLabel='circles-with-bar-loading'
                 wrapperStyle={{}}
-                wrapperClass=""
+                wrapperClass=''
                 visible={true}
               />
             </>
-
-          }
+          )}
           {transcription && (
             <div className='mt-4 text-center'>
               <p className='font-bold mb-2 text-black'>Transcription:</p>
@@ -230,10 +237,11 @@ const FileUploader = () => {
             </div>
           )}
         </form>
-        {!isTranscribing && <p className='text-black text-center mt-3 text-xs opacity-50'>
-          Support file formats: .mp3, .mov, .wmv, .mp4, .wav, .wa4,
-        </p>
-        }
+        {!isTranscribing && (
+          <p className='text-black text-center mt-3 text-xs opacity-50'>
+            Support file formats: .mp3, .mov, .wmv, .mp4, .wav, .wa4,
+          </p>
+        )}
       </div>
       <DownloadTextFile transcription={transcription} />
     </div>

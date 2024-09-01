@@ -8,17 +8,21 @@ import { usePathname } from "next/navigation";
 import { FcMenu } from "react-icons/fc";
 import { MdClose } from "react-icons/md";
 
+import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import Cookies from "js-cookie";
 
-const Navbar = ({ }) => {
+const Navbar = ({}) => {
   const pathname = usePathname();
   const [user, setUser] = useState(null);
 
   const links = [
-    { href: "/files", label: "Recordings", show: !pathname.startsWith("/files") && user },
+    {
+      href: "/files",
+      label: "Recordings",
+      show: !pathname.startsWith("/files") && user,
+    },
     { href: "/about", label: "pricing", show: true },
   ];
 
@@ -65,25 +69,30 @@ const Navbar = ({ }) => {
           href={"/"}
           className='bg-blue-950 pl-0 sm:px-3 py-4 rounded-lg self-start sm:self-center text-white'
         >
-          <h2>TranscribeMATE</h2>
+          <h2>
+            Transcribe<span className='font-bold text-teal-300'>MATE</span>
+          </h2>
         </Link>
 
         <FcMenu
-          className={`text-3xl cursor-pointer sm:hidden absolute right-8 top-7 ${isMenuOpen ? "hidden" : "block"
-            }`}
+          className={`text-3xl cursor-pointer sm:hidden absolute right-8 top-7 ${
+            isMenuOpen ? "hidden" : "block"
+          }`}
           onClick={() => setIsMenuOpen(true)}
         />
 
         <MdClose
-          className={`text-3xl cursor-pointer sm:hidden absolute right-8 top-7 ${isMenuOpen ? "block" : "hidden"
-            }`}
+          className={`text-3xl cursor-pointer sm:hidden absolute right-8 top-7 text-white ${
+            isMenuOpen ? "block" : "hidden"
+          }`}
           onClick={() => setIsMenuOpen(false)}
         />
         <ul
-          className={`flex-col gap-6 sm:flex-row sm:items-center md:ml-8 text-md text-white ${isMenuOpen
-            ? "top-[100%] sm:relative"
-            : "absolute top-[-200%] sm:relative"
-            } `}
+          className={`flex-col gap-6 sm:flex-row sm:items-center md:ml-8 text-md text-white ${
+            isMenuOpen
+              ? "top-[100%] sm:relative"
+              : "absolute top-[-200%] sm:relative"
+          } `}
         >
           {links
             .filter((link) => link.show)
@@ -103,12 +112,13 @@ const Navbar = ({ }) => {
             })}
         </ul>
         <div
-          className={`flex-col sm:flex-row  items-center justify-between gap-6 hidden sm:flex   ${isMenuOpen
-            ? "top-[100%] sm:relative"
-            : "absolute top-[-200%] sm:relative"
-            }`}
+          className={`flex-col sm:flex-row  items-center justify-between gap-6 hidden sm:flex   ${
+            isMenuOpen
+              ? "top-[100%] sm:relative"
+              : "absolute top-[-200%] sm:relative"
+          }`}
         >
-          {(user) ? (
+          {user ? (
             <button
               onClick={handleSignOut}
               className='bg-teal-400 hover:opacity-90 text-white text-sm px-8 py-2 rounded-sm'
@@ -132,7 +142,7 @@ const Navbar = ({ }) => {
             </>
           )}
 
-          {(user) &&
+          {user && (
             <button className='cursor-pointer' onClick={openModal}>
               <span className='inline-block h-10 w-10 overflow-hidden rounded-full bg-gray-100'>
                 <svg
@@ -143,7 +153,8 @@ const Navbar = ({ }) => {
                   <path d='M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z' />
                 </svg>
               </span>
-            </button>}
+            </button>
+          )}
 
           {user && isModalOpen && (
             <div

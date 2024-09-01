@@ -10,7 +10,6 @@ const tiers = [
       "Perfect for individuals or small projects with occasional transcription needs.",
     features: [
       "5 hours of audio/video transcription per month",
-      "Standard turnaround time (24-48 hours)",
       "Basic text formatting",
       "Export to TXT and PDF",
       "98% accuracy guarantee",
@@ -27,7 +26,6 @@ const tiers = [
       "Ideal for professionals and businesses with regular transcription requirements.",
     features: [
       "20 hours of audio/video transcription per month",
-      "Fast turnaround time (12-24 hours)",
       "Advanced text formatting and timestamps",
       "Export to TXT, PDF, and Word",
       "99% accuracy guarantee",
